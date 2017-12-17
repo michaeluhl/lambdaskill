@@ -41,4 +41,4 @@ def weather_intent_handler(self, request):
 Which will add the intent handler to the class definition with an appropriately mangled
 name.  Obviously, you would include these lines before the call to `get_hander()`, as
 the `get_handler()` call creates an instance of the class and returns the handler method
-of that class.
+of that instance.

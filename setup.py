@@ -1,7 +1,8 @@
 from setuptools import setup
+import lambdaskill
 
 setup(name='lambdaskill',
-      version='0.9',
+      version=lambdaskill.__version__,
       description='A simple toolkit for building Alexa skills.',
       author='Michael Uhl',
       url='https://github.com/michaeluhl/lambdaskill',

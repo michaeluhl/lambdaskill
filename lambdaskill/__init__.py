@@ -1,4 +1,4 @@
 from .skill import Card, Response, Request, IntentRequest, Skill, logger
 
 
-__version__ = '0.10.0'
+__version__ = '0.11.0'

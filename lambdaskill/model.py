@@ -1,3 +1,4 @@
+import json
 import re
 
 
@@ -265,3 +266,7 @@ class InteractionModel(object):
         if self.dialog:
             o["dialog"] = self.dialog.to_json()
         return {"interactionModel": o}
+
+    def save(self, filename):
+        with open(filename, 'wt') as modelfile:
+            json.dump(self.to_json(), modelfile)

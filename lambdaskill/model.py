@@ -81,9 +81,10 @@ class LanguageModelSlotTypeValue(object):
         self.synonyms = synonyms
 
     def to_json(self):
-        o =  {"id": self.id, "name": {"value": self.value}}
+        o = {"id": self.id, "name": {"value": self.value}}
         if self.synonyms:
             o["name"]["synonyms"] = self.synonyms
+        return o
 
 
 class LanguageModelSlotType(object):

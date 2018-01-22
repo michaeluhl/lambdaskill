@@ -269,4 +269,4 @@ class InteractionModel(object):
 
     def save(self, filename):
         with open(filename, 'wt') as modelfile:
-            json.dump(self.to_json(), modelfile)
+            json.dump(self.to_json(), modelfile, indent=2)

@@ -1,9 +1,15 @@
 from setuptools import setup
 import lambdaskill
 
+def readme():
+    with open('README.rst', 'rt') as readme_file:
+        return readme_file.read()
+
+
 setup(name='lambdaskill',
       version=lambdaskill.__version__,
       description='A simple toolkit for building Alexa skills.',
+      long_description=readme(),
       author='Michael Uhl',
       url='https://github.com/michaeluhl/lambdaskill',
       license='LGPL',

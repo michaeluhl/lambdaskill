@@ -89,6 +89,7 @@ ENV/
 
 # IDE stuff
 .idea/
+support/
 
 # Spyder project settings
 .spyderproject

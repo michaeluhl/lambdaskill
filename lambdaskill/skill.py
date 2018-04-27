@@ -113,8 +113,8 @@ class Request(object):
         try:
             return self.j['session']['attributes']
         except KeyError:
-            pass
-        return {}
+            self.j['session']['attributes'] = {}
+        return self.j['session']['attributes']
 
     @property
     def request_type(self):

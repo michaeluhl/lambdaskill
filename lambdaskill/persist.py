@@ -61,4 +61,3 @@ class AttributeStore(object):
         _ = self.__table.update_item(Key={'userId': userid, 'deviceId': deviceid},
                                      UpdateExpression='set Attributes = :a',
                                      ExpressionAttributeValues={':a': request.session_attributes})
-        print(_)

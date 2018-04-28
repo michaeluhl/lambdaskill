@@ -7,6 +7,20 @@ if logger.level == logging.NOTSET:
     logger.setLevel(logging.WARNING)
 
 
+class SSML(object):
+
+    def __init__(self, content):
+        self.content = content
+
+
+class Directive(object):
+
+    directive_type = None
+
+    def prepare(self):
+        return {'type': self.directive_type}
+
+
 class Card(object):
 
     def __init__(self, title, content=None, text=None, small_image_url=None, large_image_url=None):
@@ -37,11 +51,12 @@ class Card(object):
 
 class Response(object):
 
-    def __init__(self, output, reprompt_text=None, should_end_session=False):
+    def __init__(self, output=None, reprompt_text=None, should_end_session=None):
         self.output = output
         self.reprompt_text = reprompt_text
         self.should_end_session = should_end_session
         self.card = None
+        self.directives = []
 
     def add_card(self, title, content=None):
         if content is None:
@@ -59,40 +74,67 @@ class Response(object):
         self.reprompt_text = reprompt_text
         return self
 
-    def prepare(self, session_attributes=None):
-        if session_attributes is None:
-            session_attributes = {}
+    def add_directive(self, directive):
+        self.directives.append(directive)
+        return self
 
-        response = {
-            'outputSpeech': {
-                'type': 'PlainText',
-                'text': self.output
-            },
-            'reprompt': {
-                'outputSpeech': {
-                    'type': 'PlainText',
-                    'text': self.reprompt_text
+    def prepare(self, session_attributes=None):
+        response = {}
+        if self.output is not None:
+            if isinstance(self.output, SSML):
+                response['outputSpeech'] = {
+                    'type': 'SSML',
+                    'ssml': self.output.content
                 }
-            },
-            'shouldEndSession': self.should_end_session
-        }
+            else:
+                response['outputSpeech'] = {
+                    'type': 'PlainText',
+                    'text': self.output
+                }
+        if self.reprompt_text is not None:
+            if isinstance(self.reprompt_text, SSML):
+                response['reprompt'] = {
+                    'outputSpeech': {
+                        'type': 'SSML',
+                        'ssml': self.reprompt_text.content
+                    }
+                }
+            else:
+                response['reprompt'] = {
+                    'outputSpeech': {
+                        'type': 'PlainText',
+                        'text': self.reprompt_text
+                    }
+                }
+        if self.should_end_session is not None:
+            response['shouldEndSession'] = self.should_end_session
+
+        if self.directives:
+            response['directives'] = [d.prepare() for d in self.directives]
 
         if self.card is not None:
             response['card'] = self.card.prepare()
 
-        return {
+        container = {
             'version': '1.0',
-            'sessionAttributes': session_attributes,
             'response': response
         }
+        if session_attributes:
+            container['sessionAttributes'] = session_attributes
+
+        return container
 
     @staticmethod
     def respond(output):
-        return Response(output=output)
+        return Response(output=output, should_end_session=False)
 
     @staticmethod
     def finish(output):
         return Response(output=output, should_end_session=True)
+
+    @staticmethod
+    def direct(directive, output=None):
+        return Response(output=output, should_end_session=True).add_directive(directive=directive)
 
 
 class Request(object):

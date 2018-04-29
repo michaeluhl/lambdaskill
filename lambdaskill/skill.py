@@ -211,10 +211,21 @@ class Skill(object):
         logger.info('Received un-handled IntentRequest: {}'.format(request.intent_name))
         return Response.respond("I'm afraid that I didn't understand that request, please try again.").add_reprompt()
 
+    def dispatch(self, request):
+
+        response = None
+        if request.request_type == "SessionEndedRequest":
+            self.on_session_ended_request(request=request)
+        elif request.request_type == "LaunchRequest":
+            response = self.on_launch_request(request=request)
+        elif isinstance(request, IntentRequest):
+            f = getattr(self, self.mangle(request.intent_name), self.on_default_intent_request)
+            response = f(request)
+        return response
+
     def handler(self, event, context):
 
         request = Request.wrap(event)
-        response = None
 
         if self._app_id is not None:
             if request.j['session']['application']['applicationId'] != self._app_id:
@@ -223,16 +234,11 @@ class Skill(object):
         if request.new_session:
             self.on_session_start(request)
 
-        if request.request_type == "SessionEndedRequest":
-            self.on_session_ended_request(event['request'])
-            return
-        elif request.request_type == "LaunchRequest":
-            response = self.on_launch_request(event['request'])
-        elif isinstance(request, IntentRequest):
-            f = getattr(self, self.mangle(request.intent_name), self.on_default_intent_request)
-            response = f(request)
+        response = self.dispatch(request=request)
 
-        return response.prepare(session_attributes=request.session_attributes)
+        if response:
+            return response.prepare(session_attributes=request.session_attributes)
+        return
 
     @staticmethod
     def mangle(intent_name):

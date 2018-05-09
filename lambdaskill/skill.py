@@ -1,6 +1,16 @@
+import enum
 import logging
 
 
+class PLAYER_ACTIVITY(enum.Enum):
+    IDLE = "IDLE"
+    PAUSED = "PAUSED"
+    PLAYING = "PLAYING"
+    BUFFER_UNDERRUN = "BUFFER_UNDERRUN"
+    FINISHED = "FINISHED"
+    STOPPED = "STOPPED"
+    
+    
 logger = logging.getLogger('lambdaskill')
 logger.addHandler(logging.StreamHandler())
 if logger.level == logging.NOTSET:
@@ -137,10 +147,38 @@ class Response(object):
         return Response(output=output, should_end_session=True).add_directive(directive=directive)
 
 
+class AudioPlayer(object):
+
+    def __init__(self, request_json):
+        try:
+            ap = request_json['context']['AudioPlayer']
+            self.__token = ap.get('token', None)
+            self.__offset_in_milliseconds = ap.get('offsetInMilliseconds', None)
+            self.__player_activity = PLAYER_ACTIVITY(ap.get('playerActivity', None))
+        except KeyError:
+            raise ValueError('No AudioPlayer information in Request.')
+
+    @property
+    def token(self):
+        return self.__token
+
+    @property
+    def offset_in_milliseconds(self):
+        return self.__offset_in_milliseconds
+
+    @property
+    def player_activity(self):
+        return self.__player_activity
+
+
 class Request(object):
 
     def __init__(self, request_json):
         self.j = request_json
+        try:
+            self.__audio_player = AudioPlayer(request_json)
+        except ValueError:
+            self.__audio_player = None
 
     @property
     def new_session(self):
@@ -157,6 +195,10 @@ class Request(object):
         except KeyError:
             self.j['session']['attributes'] = {}
         return self.j['session']['attributes']
+
+    @property
+    def audio_player(self):
+        return self.__audio_player
 
     @property
     def request_type(self):
@@ -177,7 +219,7 @@ class Request(object):
 class IntentRequest(Request):
 
     def __init__(self, request_json):
-        Request.__init__(self, request_json=request_json)
+        super(IntentRequest, self).__init__(request_json=request_json)
 
     @property
     def intent_name(self):

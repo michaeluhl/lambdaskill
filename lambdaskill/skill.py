@@ -193,8 +193,10 @@ class Request(object):
         try:
             return self.j['session']['attributes']
         except KeyError:
-            self.j['session']['attributes'] = {}
-        return self.j['session']['attributes']
+            if 'session' in self.j:
+                self.j['session']['attributes'] = {}
+                return self.j['session']['attributes']
+        return None
 
     @property
     def audio_player(self):

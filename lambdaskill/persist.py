@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+
 import boto3
 
 
@@ -74,3 +76,9 @@ class AttributeStore(object):
         _ = self.__table.update_item(Key={'userId': userid, 'deviceId': deviceid},
                                      UpdateExpression='set Attributes = :a',
                                      ExpressionAttributeValues={':a': self.__attrs})
+
+    @contextmanager
+    def session(self, request):
+        self.load(request=request)
+        yield
+        self.save(request=request)

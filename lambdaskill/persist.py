@@ -58,6 +58,9 @@ class AttributeStore(object):
     def __delitem__(self, key):
         del self.__attrs[key]
 
+    def get(self, key, default=None):
+        return self.__attrs.get(key, default=default)
+
     def load(self, request):
         context = request.j['context']['System']
         userid = context['user']['userId']

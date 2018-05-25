@@ -94,7 +94,7 @@ class AudioItem(object):
                 'url': self.url,
                 'token': self.token,
                 'expectedPreviousToken': self.expected_previous_token,
-                'offset': self.offset
+                'offsetInMilliseconds': self.offset
             }
         }
 

@@ -59,7 +59,7 @@ class AttributeStore(object):
         del self.__attrs[key]
 
     def get(self, key, default=None):
-        return self.__attrs.get(key, default=default)
+        return self.__attrs.get(key, default)
 
     def load(self, request):
         context = request.j['context']['System']

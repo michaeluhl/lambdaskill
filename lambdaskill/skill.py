@@ -9,6 +9,12 @@ class PLAYER_ACTIVITY(enum.Enum):
     BUFFER_UNDERRUN = "BUFFER_UNDERRUN"
     FINISHED = "FINISHED"
     STOPPED = "STOPPED"
+
+
+class DIALOG_STATE(enum.Enum):
+    STARTED = "STARTED"
+    IN_PROGRESS = "IN_PROGRESS"
+    COMPLETED = "COMPLETED"
     
     
 logger = logging.getLogger('lambdaskill')
@@ -29,6 +35,11 @@ class Directive(object):
 
     def prepare(self):
         return {'type': self.directive_type}
+
+
+class DialogDelegateDirective(Directive):
+
+    directive_type = 'Dialog.Delegate'
 
 
 class Card(object):

@@ -116,7 +116,7 @@ class AmazonEffect(Element):
 
     def __init__(self, name=AMAZON_EFFECTS.WHISPERED, children=None):
         name = AMAZON_EFFECTS(name)
-        super(AmazonEffect, self).__init__('amazon:effect', {'name': name})
+        super(AmazonEffect, self).__init__('amazon:effect', {'name': name}, children=children)
 
 
 class Audio(Element):
@@ -141,7 +141,7 @@ class Emphasis(Element):
 
     def __init__(self, level, children=None):
         level = EMPHASIS_LEVEL(level)
-        super(Emphasis, self).__init__('emphasis', {'level': level})
+        super(Emphasis, self).__init__('emphasis', {'level': level}, children=children)
 
 
 class Paragraph(Element):
@@ -246,4 +246,68 @@ class SSML(object):
 
     def __init__(self):
         self.__speach = Speak()
+        self.__stack = [self.__speach]
 
+    @property
+    def content(self):
+        return str(self.__speach)
+
+    def sentence(self, children=None):
+        element = Sentence(children=children)
+        self.__stack[-1].add_child(element)
+        self.__stack.append(element)
+        return self
+
+    def paragraph(self, children=None):
+        element = Paragraph(children=children)
+        self.__stack[-1].add_child(element)
+        self.__stack.append(element)
+        return self
+
+    def word(self, text, role):
+        element = Word(role=role, children=[text])
+        self.__stack[-1].add_child(element)
+        return self
+
+    def amazon_effect(self, name=AMAZON_EFFECTS.WHISPERED, children=None):
+        element = AmazonEffect(name=name, children=children)
+        self.__stack[-1].add_child(element)
+        self.__stack.append(element)
+        return self
+
+    def audio(self, src):
+        element = Audio(src=src)
+        self.__stack[-1].add_child(element)
+        return self
+
+    def break_element(self, strength=None, time=None):
+        element = Break(strength=strength, time=time)
+        self.__stack[-1].add_child(element)
+        return self
+
+    def emphasis(self, level, children=None):
+        element = Emphasis(level=level, children=children)
+        self.__stack[-1].add_child(element)
+        self.__stack.append(element)
+        return self
+
+    def phoneme(self, text, ph, alphabet=PHONEME_ALPHABET.X_SAMPA):
+        element = Phoneme(ph, alphabet=alphabet, children=[text])
+        self.__stack[-1].add_child(element)
+        return
+
+    def prosody(self, rate=None, pitch=None, volume=None, children=None):
+        element = Prosody(rate=rate, pitch=pitch, volume=volume, children=children)
+        self.__stack[-1].add_child(element)
+        self.__stack.append(element)
+        return
+
+    def say_as(self, text, interpret_as, format=None):
+        element = SayAs(interpret_as=interpret_as, format=format, children=[text])
+        self.__stack[-1].add_child(element)
+        return self
+
+    def sub(self, text, alias):
+        element = Sub(alias=alias, children=[text])
+        self.__stack[-1].add_child(element)
+        return self

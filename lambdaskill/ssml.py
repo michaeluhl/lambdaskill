@@ -294,7 +294,7 @@ class SSML(object):
     def phoneme(self, text, ph, alphabet=PHONEME_ALPHABET.X_SAMPA):
         element = Phoneme(ph, alphabet=alphabet, children=[text])
         self.__stack[-1].add_child(element)
-        return
+        return self
 
     def prosody(self, rate=None, pitch=None, volume=None, children=None):
         element = Prosody(rate=rate, pitch=pitch, volume=volume, children=children)
@@ -310,4 +310,8 @@ class SSML(object):
     def sub(self, text, alias):
         element = Sub(alias=alias, children=[text])
         self.__stack[-1].add_child(element)
+        return self
+
+    def add_text(self, text):
+        self.__stack[-1].add_child(text)
         return self

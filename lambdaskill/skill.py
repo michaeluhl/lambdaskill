@@ -1,6 +1,8 @@
 import enum
 import logging
 
+from lambdaskill.ssml import SSML
+
 
 class PLAYER_ACTIVITY(enum.Enum):
     IDLE = "IDLE"
@@ -21,12 +23,6 @@ logger = logging.getLogger('lambdaskill')
 logger.addHandler(logging.StreamHandler())
 if logger.level == logging.NOTSET:
     logger.setLevel(logging.WARNING)
-
-
-class SSML(object):
-
-    def __init__(self, content):
-        self.content = content
 
 
 class Directive(object):

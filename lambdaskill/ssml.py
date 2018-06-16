@@ -315,3 +315,7 @@ class SSML(object):
     def add_text(self, text):
         self.__stack[-1].add_child(text)
         return self
+
+    def end_tag(self):
+        self.__stack.pop(-1)
+        return self

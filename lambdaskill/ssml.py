@@ -87,6 +87,8 @@ class Element(object):
         self.__tag = tag
         self.__attributes = attributes or {}
         self.children = children or []
+        if isinstance(self.children, str):
+            self.children = [self.children, ]
 
     def __getitem__(self, item):
         return self.__attributes[item]

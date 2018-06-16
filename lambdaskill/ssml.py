@@ -151,6 +151,9 @@ class Paragraph(Element):
     def __init__(self, children=None):
         super(Paragraph, self).__init__('p', children=children)
 
+    def __str__(self):
+        return ''.join([super(Paragraph, self).__str__(), '\n'])
+
 
 class Phoneme(Element):
 
@@ -213,6 +216,9 @@ class Sentence(Element):
 
     def __init__(self, children=None):
         super(Sentence, self).__init__('s', children=children)
+
+    def __str__(self):
+        return ''.join([super(Sentence, self).__str__(), ' '])
 
 
 class SayAs(Element):
